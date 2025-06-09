@@ -65,8 +65,12 @@ playwright-api-terraform-demo/
 │   ├── main.tf                    # Terraform: resource group, storage account, etc.
 │   └── variables.tf               # Terraform variables
 ├── playwright-tests/
-│   ├── tests/
-│   │   └── login.spec.ts          # Sample UI test
+│   ├── api/
+│   │   ├── apiClient.ts
+│   │   └── apiClient.test.ts      
+│   ├── utils/
+│   │   ├── helpers.ts
+│   │   └── helpers.spec.ts        
 │   └── playwright.config.ts       # Playwright config file
 ├── api-tests/
 │   ├── python/
