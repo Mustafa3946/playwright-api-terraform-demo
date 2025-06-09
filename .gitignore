@@ -1,2 +1,5 @@
 /node_modules
 *.json
+api-tests\python\.venv
+api-tests\python\.pytest_cache
+**/__pycache__/
