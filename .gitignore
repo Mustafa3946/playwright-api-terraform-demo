@@ -5,3 +5,4 @@ api-tests\python\.pytest_cache
 **/__pycache__/
 .terraform/
 .terraform.lock.hcl
+infra/*.tfstate
