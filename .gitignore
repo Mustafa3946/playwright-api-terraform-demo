@@ -3,3 +3,5 @@
 api-tests\python\.venv
 api-tests\python\.pytest_cache
 **/__pycache__/
+.terraform/
+.terraform.lock.hcl
