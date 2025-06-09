@@ -2,9 +2,9 @@
 
 ## Overview
 
-This project demonstrates end-to-end automated testing across UI and API layers, integrated with Infrastructure as Code (IaC) using Terraform on Azure, and Continuous Integration/Continuous Deployment (CI/CD) via GitHub Actions.
+This project demonstrates a modern, cloud-based test automation pipeline that integrates end-to-end UI and API testing with Infrastructure as Code (IaC) using Terraform on Azure, and CI/CD via GitHub Actions.
 
-It follows best practices for scalable test automation frameworks, infrastructure provisioning, and reporting—suitable for a professional, cloud-based test automation pipeline.
+It follows best practices for scalable test automation, infrastructure provisioning, and reporting—ideal for professional, cloud-native QA workflows.
 
 ---
 
@@ -13,7 +13,7 @@ It follows best practices for scalable test automation frameworks, infrastructur
 | Layer                  | Technology                                      |
 |------------------------|------------------------------------------------|
 | UI Testing             | Playwright (Node.js / TypeScript)              |
-| API Testing            | Postman (Newman CLI) or REST-assured (Java)    |
+| API Testing            | Python (`pytest` + `requests`)                 |
 | Infrastructure as Code | Terraform (Azure)                              |
 | CI/CD                  | GitHub Actions                                 |
 | Cloud                  | Microsoft Azure (Free Tier)                    |
@@ -41,8 +41,8 @@ It follows best practices for scalable test automation frameworks, infrastructur
        |                         |                           |
        v                         v                           v
 +---------------+     +------------------+        +--------------------------+
-| Azure Storage |     | Playwright Tests |        | Postman / REST-assured   |
-| Static Website|     | (UI Functional)  |        | Tests (API Regression)   |
+| Azure Storage |     | Playwright Tests |        | Python API Tests         |
+| Static Website|     | (UI Functional)  |        | (`pytest` + `requests`)  |
 +---------------+     +------------------+        +--------------------------+
        |
        v
@@ -69,10 +69,10 @@ playwright-api-terraform-demo/
 │   │   └── login.spec.ts          # Sample UI test
 │   └── playwright.config.ts       # Playwright config file
 ├── api-tests/
-│   ├── postman/
-│   │   └── test_collection.json   # Postman collection for API tests
-│   └── rest-assured/
-│       └── ApiTest.java           # REST-assured Java test example
+│   ├── python/
+│   │   ├── tests/
+│   │   │   └── test_api.py        # Sample Python API test
+│   │   └── requirements.txt       # Python dependencies
 ├── reports/
 │   └── index.html                 # Generated HTML report (static site)
 ├── scripts/
@@ -85,9 +85,9 @@ playwright-api-terraform-demo/
 
 ## Features
 
-- **Automated UI Testing:** Playwright for cross-browser functional tests.
-- **Automated API Testing:** Postman (Newman) or REST-assured for REST API validation.
-- **Infrastructure Provisioning:** Terraform to create Azure resources, including Storage Account for hosting reports.
+- **Automated UI Testing:** Playwright for fast, reliable cross-browser functional tests.
+- **Automated API Testing:** Python (pytest + requests) for REST API validation.
+- **Infrastructure Provisioning:** Terraform to create and manage Azure resources, including Storage Account for hosting reports.
 - **CI/CD Pipeline:** GitHub Actions automates Terraform deployment, test execution, and report publishing.
 - **Test Reporting:** HTML reports published to Azure Blob static website, accessible to stakeholders.
 - **Cost-Effective:** Uses Azure free tier and open-source tools to minimize costs.
@@ -101,7 +101,7 @@ playwright-api-terraform-demo/
 - Azure account (free tier is sufficient)
 - Terraform installed locally
 - Node.js installed (for Playwright)
-- Java and Maven/Gradle (for REST-assured tests, optional)
+- Python 3.x with pip
 - GitHub account for repository and Actions
 
 ### Setup Instructions
@@ -128,17 +128,15 @@ playwright-api-terraform-demo/
     npx playwright test
     ```
 
-5. **Run API tests (choose Postman or REST-assured):**
-    - **Postman (using Newman):**
-        ```bash
-        cd ../api-tests/postman
-        newman run test_collection.json
-        ```
-    - **REST-assured (using Maven):**
-        ```bash
-        cd ../api-tests/rest-assured
-        mvn test
-        ```
+5. **Run API tests:**
+    ```bash
+    cd ../api-tests/python
+    python -m venv venv
+    venv\Scripts\activate           # On Windows
+    # source venv/bin/activate      # On macOS/Linux
+    pip install -r requirements.txt
+    pytest --html=../../reports/api_test_report.html
+    ```
 
 6. **Upload test reports to Azure Blob Storage:**
     ```bash
@@ -153,14 +151,14 @@ playwright-api-terraform-demo/
 ## CI/CD Integration
 
 - The GitHub Actions workflow (`.github/workflows/ci.yml`) automates infrastructure provisioning, test execution, and report publishing on each push or pull request.
-- Secrets such as Azure credentials should be stored in GitHub Secrets or a local `.env` file (never committed).
+- Store secrets such as Azure credentials in GitHub Secrets or a local `.env` file (never commit secrets).
 
 ---
 
 ## Best Practices
 
 - **Azure:** Use resource groups for isolation and cost control. Clean up resources when not needed.
-- **Terraform:** Use remote state storage (e.g., Azure Storage) for team collaboration.
+- **Terraform:** Use remote state storage (e.g., Azure Storage) for team collaboration and state management.
 - **CI/CD:** Keep workflows modular and secure secrets.
 - **Testing:** Separate UI and API tests for clarity and maintainability.
 - **Reporting:** Ensure reports are accessible but secure (use SAS tokens or access policies if needed).
@@ -169,7 +167,13 @@ playwright-api-terraform-demo/
 
 ## License
 
-MIT License
+This project is licensed under the [Creative Commons Attribution-NonCommercial 4.0 International License](https://creativecommons.org/licenses/by-nc/4.0/).
+
+You may:
+- Share, remix, and adapt the work, as long as it's for **non-commercial purposes only**.
+
+You may not:
+- Use this work for **commercial purposes**, including resale or profit-driven uses, without explicit permission from the author.
 
 ---
 
