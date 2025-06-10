@@ -2,9 +2,14 @@
 
 ## Overview
 
-This project demonstrates a modern, cloud-based test automation pipeline that integrates end-to-end UI and API testing with Infrastructure as Code (IaC) using Terraform on Azure, and CI/CD via GitHub Actions.
+This project showcases a modern, cloud-native test automation pipeline that combines end-to-end UI and API testing with Infrastructure as Code (IaC) using Terraform on Microsoft Azure. Continuous Integration and Continuous Deployment (CI/CD) are managed via GitHub Actions.
 
-It follows best practices for scalable test automation, infrastructure provisioning, and reporting—ideal for professional, cloud-native QA workflows.
+The solution follows best practices for scalable test automation, robust infrastructure provisioning, and transparent reporting—making it ideal for professional QA workflows in the cloud.
+
+**Live Demo:**  
+View the latest published test reports at:  
+[https://qaplaywrightstorage.z8.web.core.windows.net/](https://qaplaywrightstorage.z8.web.core.windows.net/)
+
 
 ---
 
