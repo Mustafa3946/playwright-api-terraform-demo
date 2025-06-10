@@ -12,7 +12,6 @@ env:
 jobs:
   test-and-deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -22,33 +21,87 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Set up Node.js for Playwright
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - name: Run Playwright tests
+      - name: Install Playwright dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-4-1 libgraphene-1.0-0 libwoff1 libvpx9 libevent-2.1-7 libopus0 \
+            gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-libav gstreamer1.0-plugins-bad \
+            libflite1 libavif16 libharfbuzz-icu0 libsecret-1-0 libhyphen0 libmanette-0.2-0 libgles2 libx264-164
+
+      - name: Install npm dependencies & Playwright
         working-directory: ./playwright-tests
         run: |
-          npm install
+          npm ci
+          npx playwright install-deps
           npx playwright install
-          npx playwright test
+
+      - name: Run Playwright tests and copy report
+        working-directory: ./playwright-tests
+        run: |
+          npx playwright test --reporter=html
+          mkdir -p ../reports/ui
+          cp -r playwright-report/* ../reports/ui/ || echo "No playwright-report directory found"
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
+          cache: 'pip'
 
-      - name: Run API tests with pytest
+      - name: Install Python dependencies
+        working-directory: ./api-tests/python
+        run: pip install -r requirements.txt
+
+      - name: Run API tests and generate report
         working-directory: ./api-tests/python
         run: |
-          pip install -r requirements.txt
-          pytest --html=../../reports/api_test_report.html
+          mkdir -p ../../reports/api
+          pytest --html=../../reports/api/index.html --self-contained-html
 
-      - name: Upload Reports to Azure Blob Static Site
+      - name: Create landing page index.html linking to reports
         run: |
-          az storage blob upload-batch \
-            --account-name $AZURE_STORAGE_ACCOUNT \
-            --destination \$web \
-            --source reports \
-            --overwrite
+          mkdir -p reports
+          cat > reports/index.html <<EOF
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="UTF-8" />
+            <title>Automated Test Reports</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <style>
+              body { font-family: 'Segoe UI', Arial, sans-serif; margin: 40px; background: #f7fafd; color: #222; }
+              h1 { font-size: 2rem; margin-bottom: 24px; color: #0078d4; }
+              ul { list-style: none; padding: 0; max-width: 400px; }
+              li { margin: 18px 0; background: #fff; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); padding: 16px 20px; transition: box-shadow 0.2s; }
+              li:hover { box-shadow: 0 4px 16px rgba(0,120,212,0.10); }
+              a { font-size: 1.15rem; color: #0078d4; text-decoration: none; font-weight: 500; }
+              a:hover { text-decoration: underline; }
+              .desc { font-size: 0.98rem; color: #555; margin-top: 4px; }
+            </style>
+          </head>
+          <body>
+            <h1>Automated Test Reports</h1>
+            <ul>
+              <li>
+                <a href="/ui/index.html" target="_blank">UI Tests Report (Playwright)</a>
+                <div class="desc">Comprehensive UI test results (Playwright, TypeScript).</div>
+              </li>
+              <li>
+                <a href="/api/index.html" target="_blank">API Tests Report (Pytest)</a>
+                <div class="desc">Detailed results for all automated API tests (Python, pytest).</div>
+              </li>
+            </ul>
+          </body>
+          </html>
+          EOF
+
+      - name: Upload reports to Azure Blob Static Site
+        run: |
+          az storage blob upload --account-name $AZURE_STORAGE_ACCOUNT --container-name \$web --file reports/index.html --name index.html --overwrite
+          az storage blob upload-batch --account-name $AZURE_STORAGE_ACCOUNT --destination \$web/api --source reports/api --overwrite
+          az storage blob upload-batch --account-name $AZURE_STORAGE_ACCOUNT --destination \$web/ui --source reports/ui --overwrite
