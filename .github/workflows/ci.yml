@@ -41,7 +41,7 @@ jobs:
           sudo apt-get install -y \
             libgtk-4-1 \
             libgraphene-1.0-0 \
-            libwoff2-1 \
+            libwoff1 \
             libvpx9 \
             libevent-2.1-7 \
             libopus0 \
@@ -56,12 +56,11 @@ jobs:
             libhyphen0 \
             libmanette-0.2-0 \
             libgles2 \
-            libx264-160
+            libx264-164
 
       - name: Install npm dependencies for Playwright tests
         working-directory: ./playwright-tests
-        run: |
-          npm install
+        run: npm install
 
       - name: Install Playwright browsers and dependencies
         working-directory: ./playwright-tests
