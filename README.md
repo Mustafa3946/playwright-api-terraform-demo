@@ -129,26 +129,38 @@ playwright-api-terraform-demo/
     ```bash
     cd ../playwright-tests
     npm install
-    npx playwright test
+    npx playwright test                  # Run all UI tests
+    npx playwright test --grep "@api"    # Run only tests tagged with @api
+    npx playwright test --grep "@utils"  # Run only tests tagged with @utils
     ```
 
-5. **Run API tests:**
-    ```bash
+5. **Run API tests (Python):**
+    ```powershell
     cd ../api-tests/python
-    python -m venv venv
-    venv\Scripts\activate           # On Windows
-    # source venv/bin/activate      # On macOS/Linux
+    python -m venv .venv
+    .\.venv\Scripts\activate             # On Windows
+    # source .venv/bin/activate          # On macOS/Linux
     pip install -r requirements.txt
-    pytest --html=../../reports/api_test_report.html
+    pytest --html=../../reports/index.html --self-contained-html
     ```
 
-6. **Upload test reports to Azure Blob Storage:**
+6. **Azure CLI & Terraform test (optional):**
+    ```powershell
+    az account set --subscription "your-subscription-id"
+    $env:ARM_SUBSCRIPTION_ID="your-subscription-id"
+    powershell -ExecutionPolicy Bypass -File tests\Test-Terraform.ps1
+    ```
+
+7. **Upload test reports to Azure Blob Storage:**
     ```bash
     cd ../../scripts
-    bash upload_report.sh
+    ./upload_report.sh
     ```
 
-7. **Access reports** at the Azure Blob Storage static website URL.
+8. **Check your static site:**
+    ```
+    https://qaplaywrightstorage.z8.web.core.windows.net/
+    ```
 
 ---
 
