@@ -39,6 +39,12 @@ jobs:
           if [ -d "../playwright-report" ]; then
             cp -r ../playwright-report/* ../../reports/ui/
           fi
+          # Copy the Playwright index.html to reports/ui/index.html explicitly
+          if [ -f "../../reports/ui/index.html" ]; then
+            echo "Playwright index.html already exists"
+          else
+            cp ../../reports/ui/index.html ../../reports/ui/index.html
+          fi
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -52,43 +58,54 @@ jobs:
           mkdir -p ../../reports/api
           pytest --html=../../reports/api/index.html --self-contained-html
 
-      - name: Create unified single HTML report
+      - name: Create landing page index.html linking to reports
         run: |
           mkdir -p reports
-
-          PYTEST_HTML=$(base64 -w 0 reports/api/index.html)
-          PLAYWRIGHT_HTML=$(base64 -w 0 reports/ui/index.html)
-
           cat > reports/index.html <<EOF
           <!DOCTYPE html>
           <html lang="en">
           <head>
-            <meta charset="UTF-8">
-            <title>Combined Test Reports</title>
+            <meta charset="UTF-8" />
+            <title>Test Reports Landing Page</title>
             <style>
-              body { font-family: Arial, sans-serif; margin: 20px; }
-              h1 { font-size: 24px; }
-              h2 { font-size: 20px; margin-top: 40px; }
-              iframe { width: 100%; height: 600px; border: 1px solid #ccc; margin-top: 10px; }
+              body { font-family: Arial, sans-serif; margin: 40px; }
+              h1 { font-size: 28px; margin-bottom: 20px; }
+              ul { list-style-type: none; padding: 0; }
+              li { margin: 15px 0; }
+              a { font-size: 20px; color: #0078d4; text-decoration: none; }
+              a:hover { text-decoration: underline; }
             </style>
           </head>
           <body>
-            <h1>Combined Test Reports</h1>
-
-            <h2>UI Test Report (Playwright)</h2>
-            <iframe srcdoc="\$(echo $PLAYWRIGHT_HTML | base64 --decode)" sandbox></iframe>
-
-            <h2>API Test Report (Pytest)</h2>
-            <iframe srcdoc="\$(echo $PYTEST_HTML | base64 --decode)" sandbox></iframe>
+            <h1>Test Reports</h1>
+            <ul>
+              <li><a href="/api/index.html" target="_blank">API Tests Report (Pytest)</a></li>
+              <li><a href="/ui/index.html" target="_blank">UI Tests Report (Playwright)</a></li>
+            </ul>
           </body>
           </html>
           EOF
 
-      - name: Upload Single Report to Azure Blob Static Site
+      - name: Upload reports to Azure Blob Static Site
         run: |
+          # Upload landing page as root index.html
           az storage blob upload \
             --account-name $AZURE_STORAGE_ACCOUNT \
             --container-name \$web \
             --file reports/index.html \
             --name index.html \
+            --overwrite
+
+          # Upload API report folder contents
+          az storage blob upload-batch \
+            --account-name $AZURE_STORAGE_ACCOUNT \
+            --destination \$web/api \
+            --source reports/api \
+            --overwrite
+
+          # Upload UI report folder contents
+          az storage blob upload-batch \
+            --account-name $AZURE_STORAGE_ACCOUNT \
+            --destination \$web/ui \
+            --source reports/ui \
             --overwrite
