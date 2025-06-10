@@ -101,6 +101,10 @@ jobs:
                 <a href="/api/index.html" target="_blank">API Tests Report (Pytest)</a>
                 <div class="desc">Detailed results for all automated API tests (Python, pytest).</div>
               </li>
+              <li>
+                <a href="/bdd/index.html" target="_blank">API Tests Report (Pytest)</a>
+                <div class="desc">Detailed results for BDD tests (pytest-bdd).</div>
+              </li>
             </ul>
           </body>
           </html>
