@@ -63,6 +63,12 @@ jobs:
           mkdir -p ../../reports/api
           pytest --html=../../reports/api/index.html --self-contained-html
 
+      - name: Run BDD tests and generate report
+        working-directory: ./api-tests/python
+        run: |
+          mkdir -p ../../reports/bdd
+          pytest tests/test_status_check.py --html=../../reports/bdd/index.html --self-contained-html
+
       - name: Create landing page index.html linking to reports
         run: |
           mkdir -p reports

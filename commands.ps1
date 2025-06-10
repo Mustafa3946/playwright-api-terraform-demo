@@ -10,6 +10,8 @@ npx playwright test --grep "@utils"
 cd \api-tests\python
 .\.venv\Scripts\activate
 pytest --html=../reports/api/index.html --self-contained-html
+pytest tests/test_status_check.py --html=../../reports/bdd/index.html --self-contained-html
+
 
 az account show --query id --output tsv
 az account set --subscription "your-subscription-id"
@@ -26,3 +28,4 @@ https://qaplaywrightstorage.z8.web.core.windows.net/
 az ad sp create-for-rbac --name "github-ci-sp" --role="Contributor" --scopes="/subscriptions/<YOUR_SUBSCRIPTION_ID>" --sdk-auth
 # Step 2: Copy the JSON Output
 # Step 3: Add as GitHub Secret
+
