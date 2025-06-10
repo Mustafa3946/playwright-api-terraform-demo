@@ -32,7 +32,9 @@ jobs:
         run: |
           npm install
           npx playwright install
-          npx playwright test
+          npx playwright test --reporter=html
+          mkdir -p ../../reports/ui
+          mv ../reports/ui-report/* ../../reports/ui/
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -43,7 +45,15 @@ jobs:
         working-directory: ./api-tests/python
         run: |
           pip install -r requirements.txt
-          pytest --html=../../reports/api_test_report.html
+          pytest --html=../../reports/api/index.html --self-contained-html
+
+      - name: Create landing page with links to reports
+        run: |
+          mkdir -p reports
+          echo '<html><body><h1>Test Reports</h1><ul>' > reports/index.html
+          echo '<li><a href="ui/index.html">UI Test Report (Playwright)</a></li>' >> reports/index.html
+          echo '<li><a href="api/index.html">API Test Report (Pytest)</a></li>' >> reports/index.html
+          echo '</ul></body></html>' >> reports/index.html
 
       - name: Upload Reports to Azure Blob Static Site
         run: |

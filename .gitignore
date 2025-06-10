@@ -1,4 +1,4 @@
-/node_modules
+playwright-tests/node_modules
 *.json
 api-tests\python\.venv
 api-tests\python\.pytest_cache
