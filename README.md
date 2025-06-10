@@ -66,19 +66,21 @@ playwright-api-terraform-demo/
 │   └── variables.tf               # Terraform variables
 ├── playwright-tests/
 │   ├── api/
-│   │   ├── apiClient.ts
-│   │   └── apiClient.test.ts      
 │   ├── utils/
-│   │   ├── helpers.ts
-│   │   └── helpers.spec.ts        
+│   ├── package-lock.json
+│   ├── package.json
 │   └── playwright.config.ts       # Playwright config file
 ├── api-tests/
-│   ├── python/
-│   │   ├── tests/
-│   │   │   └── test_api.py        # Sample Python API test
-│   │   └── requirements.txt       # Python dependencies
+│   └── python/
+│       ├── tests/
+│       │   └── test_api.py        # Sample Python API test
+│       └── requirements.txt       # Python dependencies
 ├── reports/
-│   └── index.html                 # Generated HTML report (static site)
+│   ├── api/
+│   │   └── index.html             # Playwright UI test report
+│   ├── ui/
+│   │   └── index.html             # Playwright UI test report
+│   └── index.html                 # Landing page for reports (static site)
 ├── scripts/
 │   └── upload_report.sh           # Script to upload reports to Azure Blob Storage
 └── README.md
