@@ -19,6 +19,7 @@ View the latest published test reports at:
 |------------------------|------------------------------------------------|
 | UI Testing             | Playwright (Node.js / TypeScript)              |
 | API Testing            | Python (`pytest` + `requests`)                 |
+| BDD Testing            | Python (`pytest-bdd` + `requests`)             |
 | Infrastructure as Code | Terraform (Azure)                              |
 | CI/CD                  | GitHub Actions                                 |
 | Cloud                  | Microsoft Azure (Free Tier)                    |
@@ -42,13 +43,13 @@ View the latest published test reports at:
                         | - Upload reports     |
                         +----------------------+
                                  |
-       +-------------------------+---------------------------+
-       |                         |                           |
-       v                         v                           v
-+---------------+     +------------------+        +--------------------------+
-| Azure Storage |     | Playwright Tests |        | Python API Tests         |
-| Static Website|     | (UI Functional)  |        | (`pytest` + `requests`)  |
-+---------------+     +------------------+        +--------------------------+
+       +-------------------------+---------------------------+----------------------------------+
+       |                         |                           |                                  |
+       v                         v                           v                                  v
++---------------+     +------------------+        +--------------------------+        +------------------------------+
+| Azure Storage |     | Playwright Tests |        | Python API Tests         |        | BDD Tests                    |
+| Static Website|     | (UI Functional)  |        | (`pytest` + `requests`)  |        | (`pytest-bdd` + `requests`)  |
++---------------+     +------------------+        +--------------------------+        +------------------------------+
        |
        v
 +--------------------------+
@@ -71,7 +72,11 @@ playwright-api-terraform-demo/
 │   └── variables.tf               # Terraform variables
 ├── playwright-tests/
 │   ├── api/
+│   │   ├── apiClient.ts           # API client utility for Playwright tests
+│   │   └── apiClient.test.ts      # Tests for API client
 │   ├── utils/
+│   │   ├── helpers.ts             # Utility/helper functions for tests
+│   │   └── helpers.spec.ts        # Tests for helper functions
 │   ├── package-lock.json
 │   ├── package.json
 │   └── playwright.config.ts       # Playwright config file
@@ -82,10 +87,12 @@ playwright-api-terraform-demo/
 │       └── requirements.txt       # Python dependencies
 ├── reports/
 │   ├── api/
-│   │   └── index.html             # Playwright UI test report
+│   │   └── index.html                   # API test report
 │   ├── ui/
-│   │   └── index.html             # Playwright UI test report
-│   └── index.html                 # Landing page for reports (static site)
+│   │   └── index.html                   # UI test report
+│   ├── bdd/
+│   │   └── index.html                   # BDD test report
+│   └── index.html                       # Landing page for reports (static site)
 ├── scripts/
 │   └── upload_report.sh           # Script to upload reports to Azure Blob Storage
 └── README.md
@@ -97,6 +104,7 @@ playwright-api-terraform-demo/
 
 - **Automated UI Testing:** Fast, reliable cross-browser functional tests with Playwright.
 - **Automated API Testing:** REST API validation using Python (pytest + requests).
+- **Automated BDD Testing:** Behavior-driven development (BDD) tests using Python (`pytest-bdd` + `requests`) for readable, scenario-based API validation.
 - **Infrastructure Provisioning:** Terraform for Azure resources, including Storage Account for hosting reports.
 - **CI/CD Pipeline:** GitHub Actions automates Terraform deployment, test execution, and report publishing.
 - **Test Reporting:** HTML reports published to Azure Blob static website, accessible to stakeholders.
@@ -151,13 +159,16 @@ playwright-api-terraform-demo/
     npx playwright test --grep "@utils"
     ```
 
-5. **Run API tests (Python):**
+5. **Run API and BDD tests (Python):**
     ```powershell
     cd ../api-tests/python
     python -m venv .venv
     .\.venv\Scripts\activate
     pip install -r requirements.txt
+    # Run all API tests and generate report
     pytest --html=../../reports/index.html --self-contained-html
+    # Run BDD scenario tests and generate BDD report
+    pytest tests/test_status_check.py --html=../../reports/bdd/index.html --self-contained-html
     ```
 
 6. **Azure CLI & Terraform test (optional):**
@@ -192,8 +203,8 @@ playwright-api-terraform-demo/
 - **Azure:** Use resource groups for isolation and cost control. Clean up resources when not needed.
 - **Terraform:** Use remote state storage (e.g., Azure Storage) for team collaboration and state management.
 - **CI/CD:** Keep workflows modular and secure secrets.
-- **Testing:** Separate UI and API tests for clarity and maintainability.
-- **Reporting:** Ensure reports are accessible but secure (use SAS tokens or access policies if needed).
+- **Testing:** Separate UI, API, and BDD tests for clarity and maintainability. Use BDD for scenario-driven, human-readable test cases.
+- **Reporting:** Ensure BDD and other reports are accessible but secure (use SAS tokens or access policies if needed).
 
 ---
 
