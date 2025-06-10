@@ -58,6 +58,13 @@ jobs:
             libgles2 \
             libx264-164
 
+      - name: Check for package.json
+        run: |
+          if [ ! -f "./playwright-tests/package.json" ]; then
+            echo "playwright-tests/package.json not found. Ensure the directory and file exist."
+            exit 1
+          fi
+
       - name: Install npm dependencies for Playwright tests
         working-directory: ./playwright-tests
         run: npm install
