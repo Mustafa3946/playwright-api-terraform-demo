@@ -7,57 +7,57 @@ on:
     branches: [main]
 
 env:
-  ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-  ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
-  ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-  ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
   AZURE_STORAGE_ACCOUNT: qaplaywrightstorage
 
 jobs:
   test-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
-    - name: Checkout repo
-      uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
-    - name: Set up Terraform
-      uses: hashicorp/setup-terraform@v3
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: Terraform Init
-      run: terraform init
-      working-directory: ./infra
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
 
-    - name: Terraform Apply
-      run: terraform apply -auto-approve
-      working-directory: ./infra
+      - name: Terraform Init
+        run: terraform init
+        working-directory: ./infra
 
-    - name: Set up Node.js for Playwright
-      uses: actions/setup-node@v4
-      with:
-        node-version: 20
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        working-directory: ./infra
 
-    - name: Run Playwright tests
-      working-directory: ./playwright-tests
-      run: |
-        npm install
-        npx playwright install
-        npx playwright test
+      - name: Set up Node.js for Playwright
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.10'
+      - name: Run Playwright tests
+        working-directory: ./playwright-tests
+        run: |
+          npm install
+          npx playwright install
+          npx playwright test
 
-    - name: Run API tests with pytest
-      working-directory: ./api-tests/python
-      run: |
-        pip install -r requirements.txt
-        pytest --html=../../reports/api_test_report.html
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
 
-    - name: Upload Reports to Azure Blob Static Site
-      uses: azure/CLI@v1
-      with:
-        inlineScript: |
+      - name: Run API tests with pytest
+        working-directory: ./api-tests/python
+        run: |
+          pip install -r requirements.txt
+          pytest --html=../../reports/api_test_report.html
+
+      - name: Upload Reports to Azure Blob Static Site
+        run: |
           az storage blob upload-batch \
             --account-name $AZURE_STORAGE_ACCOUNT \
             --destination \$web \

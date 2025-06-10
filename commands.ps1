@@ -16,3 +16,8 @@ cd .\scripts\
 
 # Check your static site:
 https://qaplaywrightstorage.z8.web.core.windows.net/
+
+# Step 1: create a service principal with sufficient permissions (Contributor is usually enough for Terraform):
+az ad sp create-for-rbac --name "github-ci-sp" --role="Contributor" --scopes="/subscriptions/<YOUR_SUBSCRIPTION_ID>" --sdk-auth
+# Step 2: Copy the JSON Output
+# Step 3: Add as GitHub Secret

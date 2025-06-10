@@ -81,17 +81,16 @@ playwright-api-terraform-demo/
 │   └── index.html                 # Generated HTML report (static site)
 ├── scripts/
 │   └── upload_report.sh           # Script to upload reports to Azure Blob Storage
-├── README.md                      # This file
-└── .env                           # Environment variables (not committed)
+└── README.md
 ```
 
 ---
 
 ## Features
 
-- **Automated UI Testing:** Playwright for fast, reliable cross-browser functional tests.
-- **Automated API Testing:** Python (pytest + requests) for REST API validation.
-- **Infrastructure Provisioning:** Terraform to create and manage Azure resources, including Storage Account for hosting reports.
+- **Automated UI Testing:** Fast, reliable cross-browser functional tests with Playwright.
+- **Automated API Testing:** REST API validation using Python (pytest + requests).
+- **Infrastructure Provisioning:** Terraform for Azure resources, including Storage Account for hosting reports.
 - **CI/CD Pipeline:** GitHub Actions automates Terraform deployment, test execution, and report publishing.
 - **Test Reporting:** HTML reports published to Azure Blob static website, accessible to stakeholders.
 - **Cost-Effective:** Uses Azure free tier and open-source tools to minimize costs.
@@ -107,6 +106,17 @@ playwright-api-terraform-demo/
 - Node.js installed (for Playwright)
 - Python 3.x with pip
 - GitHub account for repository and Actions
+
+#### Azure Service Principal for CI/CD
+
+1. Create a service principal with sufficient permissions:
+    ```powershell
+    az ad sp create-for-rbac --name "github-ci-sp" --role="Contributor" --scopes="/subscriptions/<YOUR_SUBSCRIPTION_ID>" --sdk-auth
+    ```
+2. Copy the JSON output from the above command.
+3. Add this JSON as a GitHub Secret (e.g., `AZURE_CREDENTIALS`) in your repository settings.
+
+---
 
 ### Setup Instructions
 
@@ -129,17 +139,16 @@ playwright-api-terraform-demo/
     ```bash
     cd ../playwright-tests
     npm install
-    npx playwright test                  # Run all UI tests
-    npx playwright test --grep "@api"    # Run only tests tagged with @api
-    npx playwright test --grep "@utils"  # Run only tests tagged with @utils
+    npx playwright test
+    npx playwright test --grep "@api"
+    npx playwright test --grep "@utils"
     ```
 
 5. **Run API tests (Python):**
     ```powershell
     cd ../api-tests/python
     python -m venv .venv
-    .\.venv\Scripts\activate             # On Windows
-    # source .venv/bin/activate          # On macOS/Linux
+    .\.venv\Scripts\activate
     pip install -r requirements.txt
     pytest --html=../../reports/index.html --self-contained-html
     ```
@@ -167,7 +176,7 @@ playwright-api-terraform-demo/
 ## CI/CD Integration
 
 - The GitHub Actions workflow (`.github/workflows/ci.yml`) automates infrastructure provisioning, test execution, and report publishing on each push or pull request.
-- Store secrets such as Azure credentials in GitHub Secrets or a local `.env` file (never commit secrets).
+- Store secrets such as Azure credentials in GitHub Secrets or a local `.env` file. **Never commit secrets.**
 
 ---
 
