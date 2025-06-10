@@ -7,6 +7,7 @@
  .\.venv\Scripts\activate
  pytest --html=../../reports/index.html --self-contained-html
 
+az account show --query id --output tsv
 az account set --subscription "your-subscription-id"
 $env:ARM_SUBSCRIPTION_ID="your-subscription-id"
 powershell -ExecutionPolicy Bypass -File tests\Test-Terraform.ps1
