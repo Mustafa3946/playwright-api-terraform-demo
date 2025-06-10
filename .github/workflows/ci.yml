@@ -1,0 +1,54 @@
+name: CI - Test & Report
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  AZURE_STORAGE_ACCOUNT: qaplaywrightstorage
+
+jobs:
+  test-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Set up Node.js for Playwright
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run Playwright tests
+        working-directory: ./playwright-tests
+        run: |
+          npm install
+          npx playwright install
+          npx playwright test
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Run API tests with pytest
+        working-directory: ./api-tests/python
+        run: |
+          pip install -r requirements.txt
+          pytest --html=../../reports/api_test_report.html
+
+      - name: Upload Reports to Azure Blob Static Site
+        run: |
+          az storage blob upload-batch \
+            --account-name $AZURE_STORAGE_ACCOUNT \
+            --destination \$web \
+            --source reports \
+            --overwrite

@@ -1,24 +1,56 @@
-
 # playwright-api-terraform-demo
 
 ## Overview
 
-This project is a demo for an Automation Engineer role showcasing end-to-end automated testing across UI and API layers, integrated with Infrastructure as Code (IaC) using Terraform on Azure, and Continuous Integration/Continuous Deployment (CI/CD) using GitHub Actions.
+This project demonstrates a modern, cloud-based test automation pipeline that integrates end-to-end UI and API testing with Infrastructure as Code (IaC) using Terraform on Azure, and CI/CD via GitHub Actions.
 
-It demonstrates best practices for scalable test automation frameworks, infrastructure provisioning, and reporting, suitable for a professional cloud-based test automation pipeline.
+It follows best practices for scalable test automation, infrastructure provisioning, and reporting—ideal for professional, cloud-native QA workflows.
 
 ---
 
 ## Tech Stack
 
-| Layer        | Technology                        |
-|--------------|---------------------------------|
-| UI Testing   | Playwright (Node.js / TypeScript)|
-| API Testing  | Postman (newman CLI) or REST-assured (Java) |
-| Infrastructure as Code | Terraform (Azure)           |
-| CI/CD        | GitHub Actions                  |
-| Cloud        | Microsoft Azure (Free Tier)      |
-| Reporting    | HTML Reports hosted on Azure Blob Storage Static Website |
+| Layer                  | Technology                                      |
+|------------------------|------------------------------------------------|
+| UI Testing             | Playwright (Node.js / TypeScript)              |
+| API Testing            | Python (`pytest` + `requests`)                 |
+| Infrastructure as Code | Terraform (Azure)                              |
+| CI/CD                  | GitHub Actions                                 |
+| Cloud                  | Microsoft Azure (Free Tier)                    |
+| Reporting              | HTML Reports on Azure Blob Storage Static Site |
+
+---
+
+## Architecture Diagram
+
+```text
+                        +----------------------+
+                        |   GitHub Repository  |
+                        +----------------------+
+                                 |
+                                 | CI/CD Trigger (Push/PR)
+                                 v
+                        +----------------------+
+                        |  GitHub Actions      |
+                        | - Terraform apply    |
+                        | - Run tests          |
+                        | - Upload reports     |
+                        +----------------------+
+                                 |
+       +-------------------------+---------------------------+
+       |                         |                           |
+       v                         v                           v
++---------------+     +------------------+        +--------------------------+
+| Azure Storage |     | Playwright Tests |        | Python API Tests         |
+| Static Website|     | (UI Functional)  |        | (`pytest` + `requests`)  |
++---------------+     +------------------+        +--------------------------+
+       |
+       v
++--------------------------+
+| HTML Report Public Link  |
+| (Accessible to recruiter)|
++--------------------------+
+```
 
 ---
 
@@ -33,32 +65,35 @@ playwright-api-terraform-demo/
 │   ├── main.tf                    # Terraform: resource group, storage account, etc.
 │   └── variables.tf               # Terraform variables
 ├── playwright-tests/
-│   ├── tests/
-│   │   └── login.spec.ts          # Sample UI test
+│   ├── api/
+│   │   ├── apiClient.ts
+│   │   └── apiClient.test.ts      
+│   ├── utils/
+│   │   ├── helpers.ts
+│   │   └── helpers.spec.ts        
 │   └── playwright.config.ts       # Playwright config file
 ├── api-tests/
-│   ├── postman/
-│   │   └── test_collection.json   # Postman collection for API tests
-│   └── rest-assured/
-│       └── ApiTest.java           # REST-assured Java test example
+│   ├── python/
+│   │   ├── tests/
+│   │   │   └── test_api.py        # Sample Python API test
+│   │   └── requirements.txt       # Python dependencies
 ├── reports/
-│   └── index.html                 # Generated HTML report accessible via static website
+│   └── index.html                 # Generated HTML report (static site)
 ├── scripts/
 │   └── upload_report.sh           # Script to upload reports to Azure Blob Storage
-├── README.md                      # This file
-└── .env                          # Environment variables (not committed)
+└── README.md
 ```
 
 ---
 
 ## Features
 
-- **Automated UI Testing**: Playwright for cross-browser functional tests.
-- **Automated API Testing**: Postman or REST-assured for REST API validation.
-- **Infrastructure Provisioning**: Terraform to create Azure resources including Storage Account for hosting reports.
-- **CI/CD Pipeline**: GitHub Actions automates Terraform deployment, test execution, and report publishing.
-- **Test Reporting**: HTML reports published to Azure Blob static website, providing accessible test results to stakeholders.
-- **Cost-Effective**: Utilizes Azure free tier and open-source tools to minimize costs.
+- **Automated UI Testing:** Fast, reliable cross-browser functional tests with Playwright.
+- **Automated API Testing:** REST API validation using Python (pytest + requests).
+- **Infrastructure Provisioning:** Terraform for Azure resources, including Storage Account for hosting reports.
+- **CI/CD Pipeline:** GitHub Actions automates Terraform deployment, test execution, and report publishing.
+- **Test Reporting:** HTML reports published to Azure Blob static website, accessible to stakeholders.
+- **Cost-Effective:** Uses Azure free tier and open-source tools to minimize costs.
 
 ---
 
@@ -66,84 +101,104 @@ playwright-api-terraform-demo/
 
 ### Prerequisites
 
-- Azure account (free tier sufficient)
+- Azure account (free tier is sufficient)
 - Terraform installed locally
 - Node.js installed (for Playwright)
-- Java and Maven/Gradle (for REST-assured tests, optional)
+- Python 3.x with pip
 - GitHub account for repository and Actions
+
+#### Azure Service Principal for CI/CD
+
+1. Create a service principal with sufficient permissions:
+    ```powershell
+    az ad sp create-for-rbac --name "github-ci-sp" --role="Contributor" --scopes="/subscriptions/<YOUR_SUBSCRIPTION_ID>" --sdk-auth
+    ```
+2. Copy the JSON output from the above command.
+3. Add this JSON as a GitHub Secret (e.g., `AZURE_CREDENTIALS`) in your repository settings.
+
+---
 
 ### Setup Instructions
 
-1. Clone the repository:
+1. **Clone the repository:**
+    ```bash
+    git clone https://github.com/Mustafa3946/playwright-api-terraform-demo.git
+    cd playwright-api-terraform-demo
+    ```
 
-```bash
-git clone https://github.com/your-username/playwright-api-terraform-demo.git
-cd playwright-api-terraform-demo
-```
+2. **Configure Terraform variables** in `infra/variables.tf` or via environment variables.
 
-2. Configure Terraform variables in `infra/variables.tf` or via environment variables.
+3. **Deploy Azure infrastructure:**
+    ```bash
+    cd infra
+    terraform init
+    terraform apply
+    ```
 
-3. Deploy Azure infrastructure:
+4. **Run Playwright UI tests:**
+    ```bash
+    cd ../playwright-tests
+    npm install
+    npx playwright test
+    npx playwright test --grep "@api"
+    npx playwright test --grep "@utils"
+    ```
 
-```bash
-cd infra
-terraform init
-terraform apply
-```
+5. **Run API tests (Python):**
+    ```powershell
+    cd ../api-tests/python
+    python -m venv .venv
+    .\.venv\Scripts\activate
+    pip install -r requirements.txt
+    pytest --html=../../reports/index.html --self-contained-html
+    ```
 
-4. Run Playwright UI tests:
+6. **Azure CLI & Terraform test (optional):**
+    ```powershell
+    az account set --subscription "your-subscription-id"
+    $env:ARM_SUBSCRIPTION_ID="your-subscription-id"
+    powershell -ExecutionPolicy Bypass -File tests\Test-Terraform.ps1
+    ```
 
-```bash
-cd ../playwright-tests
-npm install
-npx playwright test
-```
+7. **Upload test reports to Azure Blob Storage:**
+    ```bash
+    cd ../../scripts
+    ./upload_report.sh
+    ```
 
-5. Run API tests (choose Postman or REST-assured):
-
-- Postman (using Newman):
-
-```bash
-cd ../api-tests/postman
-newman run test_collection.json
-```
-
-- REST-assured (using Maven or Gradle):
-
-```bash
-cd ../api-tests/rest-assured
-mvn test
-```
-
-6. Upload test reports to Azure Blob Storage:
-
-```bash
-cd ../scripts
-bash upload_report.sh
-```
-
-7. Access reports at the Azure Blob Storage static website URL.
+8. **Check your static site:**
+    ```
+    https://qaplaywrightstorage.z8.web.core.windows.net/
+    ```
 
 ---
 
 ## CI/CD Integration
 
-- The GitHub Actions workflow (`.github/workflows/ci.yml`) automates the above steps on each push or pull request.
-- It applies Terraform changes, runs UI and API tests, then uploads reports automatically.
+- The GitHub Actions workflow (`.github/workflows/ci.yml`) automates infrastructure provisioning, test execution, and report publishing on each push or pull request.
+- Store secrets such as Azure credentials in GitHub Secrets or a local `.env` file. **Never commit secrets.**
 
 ---
 
-## Notes
+## Best Practices
 
-- Keep secrets such as Azure credentials in GitHub Secrets or `.env` files (not committed).
-- Modify test cases and infrastructure as needed to fit your specific project.
-- Designed to be easily understandable by recruiters and technical stakeholders.
+- **Azure:** Use resource groups for isolation and cost control. Clean up resources when not needed.
+- **Terraform:** Use remote state storage (e.g., Azure Storage) for team collaboration and state management.
+- **CI/CD:** Keep workflows modular and secure secrets.
+- **Testing:** Separate UI and API tests for clarity and maintainability.
+- **Reporting:** Ensure reports are accessible but secure (use SAS tokens or access policies if needed).
 
 ---
 
 ## License
 
-MIT License
+This project is licensed under the [Creative Commons Attribution-NonCommercial 4.0 International License](https://creativecommons.org/licenses/by-nc/4.0/).
+
+You may:
+- Share, remix, and adapt the work, as long as it's for **non-commercial purposes only**.
+
+You may not:
+- Use this work for **commercial purposes**, including resale or profit-driven uses, without explicit permission from the author.
 
 ---
 
