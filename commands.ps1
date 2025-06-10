@@ -1,13 +1,15 @@
-npx playwright test playwright-tests/utils/helpers.spec.ts
 
+# Run playwright test
 npm install --save-dev @playwright/test
+cd playwright-tests
 npx playwright test
 npx playwright test --grep "@api"
 npx playwright test --grep "@utils"
  
-# go to playwright-api-terraform-demo\api-tests\python
+# Run Pytest
+cd \api-tests\python
 .\.venv\Scripts\activate
-pytest --html=../../reports/api/index.html --self-contained-html
+pytest --html=../reports/api/index.html --self-contained-html
 
 az account show --query id --output tsv
 az account set --subscription "your-subscription-id"
