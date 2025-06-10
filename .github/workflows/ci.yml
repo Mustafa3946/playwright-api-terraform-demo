@@ -12,7 +12,6 @@ env:
 jobs:
   test-and-deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -22,81 +21,43 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Set up Node.js for Playwright
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - name: Cache npm dependencies for Playwright tests
-        uses: actions/cache@v3
-        with:
-          path: playwright-tests/node_modules
-          key: ${{ runner.os }}-npm-playwright-${{ hashFiles('playwright-tests/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-npm-playwright-
-
-      - name: Install system dependencies required by Playwright
+      - name: Install Playwright dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y \
-            libgtk-4-1 \
-            libgraphene-1.0-0 \
-            libwoff1 \
-            libvpx9 \
-            libevent-2.1-7 \
-            libopus0 \
-            gstreamer1.0-plugins-base \
-            gstreamer1.0-plugins-good \
-            gstreamer1.0-libav \
-            gstreamer1.0-plugins-bad \
-            libflite1 \
-            libavif16 \
-            libharfbuzz-icu0 \
-            libsecret-1-0 \
-            libhyphen0 \
-            libmanette-0.2-0 \
-            libgles2 \
-            libx264-164
+          sudo apt-get install -y libgtk-4-1 libgraphene-1.0-0 libwoff1 libvpx9 libevent-2.1-7 libopus0 \
+            gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-libav gstreamer1.0-plugins-bad \
+            libflite1 libavif16 libharfbuzz-icu0 libsecret-1-0 libhyphen0 libmanette-0.2-0 libgles2 libx264-164
 
-      - name: Check for package.json
-        run: |
-          if [ ! -f "./playwright-tests/package.json" ]; then
-            echo "playwright-tests/package.json not found. Ensure the directory and file exist."
-            exit 1
-          fi
-
-      - name: Install npm dependencies for Playwright tests
-        working-directory: ./playwright-tests
-        run: npm install
-
-      - name: Install Playwright browsers and dependencies
+      - name: Install npm dependencies & Playwright
         working-directory: ./playwright-tests
         run: |
+          npm ci
           npx playwright install-deps
           npx playwright install
 
-      - name: Run Playwright tests
+      - name: Run Playwright tests and copy report
         working-directory: ./playwright-tests
         run: |
           npx playwright test --reporter=html
           mkdir -p ../reports/ui
-          if [ -d "playwright-report" ]; then
-            cp -r playwright-report/* ../reports/ui/
-          else
-            echo "No playwright-report directory found"
-          fi
+          cp -r playwright-report/* ../reports/ui/ || echo "No playwright-report directory found"
 
-      - name: Set up Python 3.10
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
           cache: 'pip'
 
-      - name: Install Python dependencies for API tests
+      - name: Install Python dependencies
         working-directory: ./api-tests/python
         run: pip install -r requirements.txt
 
-      - name: Run API tests with pytest
+      - name: Run API tests and generate report
         working-directory: ./api-tests/python
         run: |
           mkdir -p ../../reports/api
@@ -141,21 +102,6 @@ jobs:
 
       - name: Upload reports to Azure Blob Static Site
         run: |
-          az storage blob upload \
-            --account-name $AZURE_STORAGE_ACCOUNT \
-            --container-name \$web \
-            --file reports/index.html \
-            --name index.html \
-            --overwrite
-
-          az storage blob upload-batch \
-            --account-name $AZURE_STORAGE_ACCOUNT \
-            --destination \$web/api \
-            --source reports/api \
-            --overwrite
-
-          az storage blob upload-batch \
-            --account-name $AZURE_STORAGE_ACCOUNT \
-            --destination \$web/ui \
-            --source reports/ui \
-            --overwrite
+          az storage blob upload --account-name $AZURE_STORAGE_ACCOUNT --container-name \$web --file reports/index.html --name index.html --overwrite
+          az storage blob upload-batch --account-name $AZURE_STORAGE_ACCOUNT --destination \$web/api --source reports/api --overwrite
+          az storage blob upload-batch --account-name $AZURE_STORAGE_ACCOUNT --destination \$web/ui --source reports/ui --overwrite
