@@ -28,7 +28,7 @@ jobs:
           node-version: 20
 
       - name: Run Playwright tests
-        working-directory: ./playwright-tests
+        working-directory: ./playwright-api-terraform-demo/playwright-tests
         run: |
           npm install
           npx playwright install
@@ -42,7 +42,7 @@ jobs:
           python-version: '3.10'
 
       - name: Run API tests with pytest
-        working-directory: ./api-tests/python
+        working-directory: ./playwright-api-terraform-demo/api-tests/python
         run: |
           pip install -r requirements.txt
           pytest --html=../../reports/api/index.html --self-contained-html
