@@ -102,7 +102,7 @@ jobs:
                 <div class="desc">Detailed results for all automated API tests (Python, pytest).</div>
               </li>
               <li>
-                <a href="/bdd/index.html" target="_blank">API Tests Report (Pytest)</a>
+                <a href="/bdd/index.html" target="_blank">BDD Tests Report (Pytest-bdd)</a>
                 <div class="desc">Detailed results for BDD tests (pytest-bdd).</div>
               </li>
             </ul>
@@ -115,3 +115,4 @@ jobs:
           az storage blob upload --account-name $AZURE_STORAGE_ACCOUNT --container-name \$web --file reports/index.html --name index.html --overwrite
           az storage blob upload-batch --account-name $AZURE_STORAGE_ACCOUNT --destination \$web/api --source reports/api --overwrite
           az storage blob upload-batch --account-name $AZURE_STORAGE_ACCOUNT --destination \$web/ui --source reports/ui --overwrite
+          az storage blob upload-batch --account-name $AZURE_STORAGE_ACCOUNT --destination \$web/bdd --source reports/bdd --overwrite
