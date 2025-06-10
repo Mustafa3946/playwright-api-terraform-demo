@@ -26,35 +26,45 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
 
-      - name: Install npm dependencies at repo root
-        run: npm install || echo "No package.json in root, skipping"
+      - name: Install npm dependencies for Playwright tests
+        working-directory: ./playwright-tests
+        run: |
+          if [ -f package.json ]; then
+            npm install
+          else
+            echo "No package.json in ./playwright-tests, skipping npm install"
+          fi
+
+      - name: Install Playwright browsers
+        working-directory: ./playwright-tests
+        run: npx playwright install
 
       - name: Run Playwright tests
         working-directory: ./playwright-tests
         run: |
-          npx playwright install
           npx playwright test --reporter=html
-          mkdir -p ../../reports/ui
-          if [ -d "../playwright-report" ]; then
-            cp -r ../playwright-report/* ../../reports/ui/
-          fi
-          # Copy the Playwright index.html to reports/ui/index.html explicitly
-          if [ -f "../../reports/ui/index.html" ]; then
-            echo "Playwright index.html already exists"
+          mkdir -p ../reports/ui
+          if [ -d "playwright-report" ]; then
+            cp -r playwright-report/* ../reports/ui/
           else
-            cp ../../reports/ui/index.html ../../reports/ui/index.html
+            echo "No playwright-report directory found"
           fi
 
-      - name: Set up Python
+      - name: Set up Python 3.10
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
+          cache: 'pip'
+
+      - name: Install Python dependencies for API tests
+        working-directory: ./api-tests/python
+        run: pip install -r requirements.txt
 
       - name: Run API tests with pytest
         working-directory: ./api-tests/python
         run: |
-          pip install -r requirements.txt
           mkdir -p ../../reports/api
           pytest --html=../../reports/api/index.html --self-contained-html
 
@@ -88,7 +98,6 @@ jobs:
 
       - name: Upload reports to Azure Blob Static Site
         run: |
-          # Upload landing page as root index.html
           az storage blob upload \
             --account-name $AZURE_STORAGE_ACCOUNT \
             --container-name \$web \
@@ -96,14 +105,12 @@ jobs:
             --name index.html \
             --overwrite
 
-          # Upload API report folder contents
           az storage blob upload-batch \
             --account-name $AZURE_STORAGE_ACCOUNT \
             --destination \$web/api \
             --source reports/api \
             --overwrite
 
-          # Upload UI report folder contents
           az storage blob upload-batch \
             --account-name $AZURE_STORAGE_ACCOUNT \
             --destination \$web/ui \
