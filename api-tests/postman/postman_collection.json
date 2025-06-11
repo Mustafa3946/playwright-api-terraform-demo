@@ -1,0 +1,79 @@
+{
+  "info": {
+    "name": "API Testing Collection",
+    "_postman_id": "d7d98765-9fa2-4000-9f3c-778ad8a33b94",
+    "description": "A simple Postman collection for API testing",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get Users API",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://jsonplaceholder.typicode.com/users",
+          "protocol": "https",
+          "host": [
+            "jsonplaceholder",
+            "typicode",
+            "com"
+          ],
+          "path": [
+            "users"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create User API",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\": \"John Doe\", \"email\": \"john.doe@example.com\"}"
+        },
+        "url": {
+          "raw": "https://jsonplaceholder.typicode.com/users",
+          "protocol": "https",
+          "host": [
+            "jsonplaceholder",
+            "typicode",
+            "com"
+          ],
+          "path": [
+            "users"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "pm.test('Response should be 200 or 201', function () {",
+          "    var statusCode = pm.response.code;",
+          "    pm.expect(statusCode).to.be.oneOf([200, 201]);",
+          "});",
+          "pm.test('Response should be a list', function () {",
+          "    pm.response.to.have.jsonBody([]);",
+          "});",
+          "pm.test('Response should be an object', function () {",
+          "    pm.response.to.have.jsonBody({});",
+          "});"
+        ]
+      }
+    }
+  ]
+}

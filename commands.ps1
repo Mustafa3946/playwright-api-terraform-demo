@@ -29,3 +29,8 @@ az ad sp create-for-rbac --name "github-ci-sp" --role="Contributor" --scopes="/s
 # Step 2: Copy the JSON Output
 # Step 3: Add as GitHub Secret
 
+# Test Postman Collection
+npm install -g newman
+npm install -g newman-reporter-html
+newman run .\api-tests\postman\postman_collection.json
+newman run .\api-tests\postman\postman_collection.json -r html --reporter-html-export ./reports/api/postman-report.html
