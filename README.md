@@ -59,12 +59,12 @@ This repository **directly implements** the core automation engineering skills a
            |
            v
 +---------------------------------------------------------------+
-|                        Azure Cloud                           |
+|                        Azure Cloud                            |
 |                                                               |
-|  +------------------+   +--------------------------+   +------------------------------+   +------------------+  |
-|  | Playwright Tests |   | Python API Tests         |   | BDD Tests                    |   | Postman Tests    |  |
-|  | (UI Functional)  |   | (pytest + requests)      |   | (pytest-bdd + requests)      |   | (Newman)        |  |
-|  +------------------+   +--------------------------+   +------------------------------+   +------------------+  |
+|  +------------------+   +--------------------------+   +------------------------------+   +------------------+     |
+|  | Playwright Tests |   | Python API Tests         |   | BDD Tests                    |   | Postman Tests    |     |
+|  | (UI Functional)  |   | (pytest + requests)      |   | (pytest-bdd + requests)      |   | (Newman)         |     |
+|  +------------------+   +--------------------------+   +------------------------------+   +------------------+     |
 |           |                      |                              |                                |                 |
 |           +----------+-----------+--------------+---------------+                                |                 |
 |                      |                          |                                                |                 |
