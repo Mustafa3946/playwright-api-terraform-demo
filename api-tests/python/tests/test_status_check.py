@@ -3,15 +3,33 @@ import requests
 
 scenarios('../features/status_check.feature')
 
+# Shared context to store response
+class Context:
+    response = None
+
+context = Context()
+
 @given('the API is available')
 def api_available():
-    # For this demo, we’ll assume the API is always available.
-    pass
+    print("Assuming API is available")
 
-@when('I call the /status endpoint')
-def call_status(request):
-    request.response = requests.get("https://httpbin.org/status/200")
+@when(parsers.parse('I call the endpoint "{endpoint}"'))
+def call_endpoint(endpoint):
+    url = f"https://httpbin.org/{endpoint}"
+    context.response = requests.get(url)
+    print(f"Calling URL: {url}")
 
-@then('the response code should be 200')
-def check_status(request):
-    assert request.response.status_code == 200
+@then(parsers.parse('the response code should be {expected_code:d}'))
+def check_response_code(expected_code):
+    assert context.response.status_code == expected_code, \
+        f"Expected {expected_code}, got {context.response.status_code}"
+
+@then('the response body should be empty')
+def check_empty_body():
+    assert context.response.text == '', "Expected empty body"
+
+@then('the Content-Type should be "text/html"')
+def check_content_type():
+    content_type = context.response.headers.get("Content-Type", "")
+    print(f"Content-Type received: {content_type}")
+    assert "text/html" in content_type
