@@ -75,7 +75,7 @@ jobs:
 
       - name: Run Postman Collection and generate report
         run: |
-          newman run ./api-tests/postman/your_postman_collection.json --reporters html --reporter-html-export reports/api/postman-report.html
+          newman run ./api-tests/postman/postman_collection.json --reporters html --reporter-html-export reports/api/postman-report.html
 
       - name: Create landing page index.html linking to reports
         run: |
