@@ -10,3 +10,4 @@ test('@api should fetch user successfully', async () => {
 test('@api should throw error for invalid user', async () => {
   await expect(getUser(9999)).rejects.toThrow('Failed to fetch user');
 });
+
