@@ -1,35 +1,37 @@
+# Path: commands.ps1
+# Purpose: Common commands for running Playwright, Pytest, Postman, Azure CLI, and deployment tasks in this demo.
 
-# Run playwright test
+# Install Playwright test dependencies and run UI/API tests
 npm install --save-dev @playwright/test
 cd playwright-tests
 npx playwright test
 npx playwright test --grep "@api"
 npx playwright test --grep "@utils"
- 
-# Run Pytest
+
+# Run Python API and BDD tests with HTML reporting
 cd \api-tests\python
 .\.venv\Scripts\activate
 pytest --html=../../reports/api/index.html --self-contained-html
 pytest tests/test_status_check.py --html=../../reports/bdd/index.html --self-contained-html
 
-
+# Azure CLI: Show account, set subscription, and set environment variable for Terraform
 az account show --query id --output tsv
 az account set --subscription "your-subscription-id"
 $env:ARM_SUBSCRIPTION_ID="your-subscription-id"
 powershell -ExecutionPolicy Bypass -File tests\Test-Terraform.ps1
-# bash script to upload the html
+
+# Upload HTML reports to Azure Blob Storage
 cd .\scripts\
 ./upload_report.sh
 
 # Check your static site:
-https://qaplaywrightstorage.z8.web.core.windows.net/
+# https://qaplaywrightstorage.z8.web.core.windows.net/
 
-# Step 1: create a service principal with sufficient permissions (Contributor is usually enough for Terraform):
+# Create a service principal for GitHub Actions CI/CD integration
 az ad sp create-for-rbac --name "github-ci-sp" --role="Contributor" --scopes="/subscriptions/<YOUR_SUBSCRIPTION_ID>" --sdk-auth
-# Step 2: Copy the JSON Output
-# Step 3: Add as GitHub Secret
+# Copy the JSON Output and add as GitHub Secret
 
-# Test Postman Collection
+# Test Postman Collection and generate HTML report
 npm install -g newman
 npm install -g newman-reporter-html
 newman run .\api-tests\postman\postman_collection.json
