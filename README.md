@@ -2,29 +2,43 @@
 
 ## Overview
 
-This project showcases a modern, cloud-native test automation pipeline that combines end-to-end UI and API testing with Infrastructure as Code (IaC) using Terraform on Microsoft Azure. Continuous Integration and Continuous Deployment (CI/CD) are managed via GitHub Actions.
+This project is a **cloud-native, end-to-end test automation framework** that demonstrates full-stack quality engineering capabilities, covering:
 
-The solution follows best practices for scalable test automation, robust infrastructure provisioning, and transparent reporting—making it ideal for professional QA workflows in the cloud.
+- **UI Automation (Playwright)**
+- **API Testing (Pytest + Requests)**
+- **BDD Testing (pytest-bdd)**
+- **Postman Collections (Newman HTML Reports)**
+- **Infrastructure as Code (Terraform on Azure)**
+- **CI/CD Automation (GitHub Actions)**
+- **Test Reporting via Azure Blob Static Website Hosting**
+
+It reflects a real-world enterprise scenario—integrating automated test coverage into a CI/CD pipeline, targeting UI, API, and integration layers while publishing reports accessible to stakeholders.
 
 **Live Demo:**  
 View the latest published test reports at:  
 [https://qaplaywrightstorage.z8.web.core.windows.net/](https://qaplaywrightstorage.z8.web.core.windows.net/)
 
-
 ---
 
-## Tech Stack
+## 🚀 Tech Stack Coverage in This Demo
 
-| Layer                  | Technology                                     |
-|------------------------|------------------------------------------------|
-| UI Testing             | Playwright (Node.js / TypeScript)              |
-| API Testing            | Python (`pytest` + `requests`)                 |
-| BDD Testing            | Python (`pytest-bdd` + `requests`)             |
-| Postman Collections    | Postman + Newman (with HTML reporting)         |
-| Infrastructure as Code | Terraform (Azure)                              |
-| CI/CD                  | GitHub Actions                                 |
-| Cloud                  | Microsoft Azure (Free Tier)                    |
-| Reporting              | HTML Reports on Azure Blob Storage Static Site |
+This repository **directly implements** the core automation engineering skills and technologies highlighted in the job description:
+
+|-----------------------------------------------|------------------------------------------------------------|
+| Capability                                    | Implementation in This Demo                                |
+|-----------------------------------------------|------------------------------------------------------------|
+| **UI Automation (Cross-browser)**             | Playwright (Node.js / TypeScript)                          |
+| **API Testing (Functional)**                  | Python `pytest` + `requests`                               |
+| **BDD Testing (Readable Scenarios)**          | Python `pytest-bdd` + Gherkin                              |
+| **API Contract Testing**                      | Postman + Newman (HTML Reports)                            |
+| **Integration Testing**                       | Coordinated test execution across layers                   |
+| **Infrastructure as Code (IaC)**              | Terraform on Azure                                         |
+| **CI/CD Pipeline**                            | GitHub Actions                                             |
+| **Cloud Deployment**                          | Microsoft Azure (Free Tier)                                |
+| **Test Reporting**                            | HTML reports hosted via Azure Blob static website          |
+|-----------------------------------------------|------------------------------------------------------------|
+
+> **This demo covers the full spectrum of automation engineering: scalable frameworks, cross-layer test coverage, CI/CD integration, cloud provisioning, and stakeholder reporting.**
 
 ---
 
@@ -70,11 +84,6 @@ View the latest published test reports at:
 |                                                    +--------------------------+
 +---------------------------------------------------------------+
 ```
-**Legend:**
-- **GitHub Actions**: Orchestrates the pipeline (Terraform, tests, reporting).
-- **Playwright, API, BDD, Postman**: All test types run in CI/CD.
-- **HTML Reports**: Generated for each test type, published to Azure Blob Static Website.
-- **Azure Storage**: Hosts the static site for public access to reports.
 
 ---
 
@@ -227,7 +236,7 @@ playwright-api-terraform-demo/
 ## CI/CD Integration
 
 - The GitHub Actions workflow (`.github/workflows/ci.yml`) automates infrastructure provisioning, test execution, and report publishing on each push or pull request.
-- Store secrets such as Azure credentials in GitHub Secrets or a local `.env` file. **Never commit secrets.**
+- Store secrets such as Azure credentials in GitHub Secrets or a local envirnment variables. **Never commit secrets.**
 
 ---
 

@@ -20,5 +20,6 @@ resource "azurerm_storage_account" "qa_reports" {
 }
 
 output "static_website_url" {
+  # Outputs the primary endpoint for the static website
   value = azurerm_storage_account.qa_reports.primary_web_endpoint
 }

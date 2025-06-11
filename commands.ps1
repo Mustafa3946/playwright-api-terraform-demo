@@ -9,7 +9,7 @@ npx playwright test --grep "@utils"
 # Run Pytest
 cd \api-tests\python
 .\.venv\Scripts\activate
-pytest --html=../reports/api/index.html --self-contained-html
+pytest --html=../../reports/api/index.html --self-contained-html
 pytest tests/test_status_check.py --html=../../reports/bdd/index.html --self-contained-html
 
 

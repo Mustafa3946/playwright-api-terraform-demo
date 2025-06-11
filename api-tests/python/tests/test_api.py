@@ -1,10 +1,15 @@
 # api-tests/python/tests/test_api.py
+# Purpose: API tests for validating the /users endpoint of the JSONPlaceholder demo API.
+
 import requests
 
 BASE_URL = "https://jsonplaceholder.typicode.com"
 
 
 def test_get_users():
+    """
+    Test that /users returns a list of 10 users with valid 'id' and 'email' fields.
+    """
     url = f"{BASE_URL}/users"
     response = requests.get(url)
 
@@ -25,6 +30,9 @@ def test_get_users():
 
 
 def test_specific_user_exists():
+    """
+    Test that a user with username 'Bret' exists in the /users response.
+    """
     response = requests.get(f"{BASE_URL}/users")
     users = response.json()
 
@@ -34,6 +42,9 @@ def test_specific_user_exists():
 
 
 def test_user_json_structure():
+    """
+    Test that the first user object contains all expected keys.
+    """
     response = requests.get(f"{BASE_URL}/users")
     user = response.json()[0]
 
