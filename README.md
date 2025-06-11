@@ -20,7 +20,7 @@ View the latest published test reports at:
 
 ---
 
-## 🚀 Tech Stack Coverage in This Demo
+## Tech Stack Coverage in This Demo
 
 This repository **directly implements** the core automation engineering skills and technologies highlighted in the job description:
 
