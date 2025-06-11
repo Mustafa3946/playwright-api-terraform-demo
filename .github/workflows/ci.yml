@@ -63,6 +63,20 @@ jobs:
           mkdir -p ../../reports/api
           pytest --html=../../reports/api/index.html --self-contained-html
 
+      - name: Run BDD tests and generate report
+        working-directory: ./api-tests/python
+        run: |
+          mkdir -p ../../reports/bdd
+          pytest tests/test_status_check.py --html=../../reports/bdd/index.html --self-contained-html
+
+      - name: Install Newman (Postman CLI)
+        run: |
+          npm install -g newman
+
+      - name: Run Postman Collection and generate report
+        run: |
+          newman run ./api-tests/postman/postman_collection.json --reporters html --reporter-html-export reports/api/postman-report.html
+
       - name: Create landing page index.html linking to reports
         run: |
           mkdir -p reports
@@ -95,6 +109,14 @@ jobs:
                 <a href="/api/index.html" target="_blank">API Tests Report (Pytest)</a>
                 <div class="desc">Detailed results for all automated API tests (Python, pytest).</div>
               </li>
+              <li>
+                <a href="/bdd/index.html" target="_blank">BDD Tests Report (Pytest-bdd)</a>
+                <div class="desc">Detailed results for BDD tests (pytest-bdd).</div>
+              </li>
+              <li>
+                <a href="/api/postman-report.html" target="_blank">Postman Tests Report</a>
+                <div class="desc">Postman tests results (Newman).</div>
+              </li>
             </ul>
           </body>
           </html>
@@ -105,3 +127,5 @@ jobs:
           az storage blob upload --account-name $AZURE_STORAGE_ACCOUNT --container-name \$web --file reports/index.html --name index.html --overwrite
           az storage blob upload-batch --account-name $AZURE_STORAGE_ACCOUNT --destination \$web/api --source reports/api --overwrite
           az storage blob upload-batch --account-name $AZURE_STORAGE_ACCOUNT --destination \$web/ui --source reports/ui --overwrite
+          az storage blob upload-batch --account-name $AZURE_STORAGE_ACCOUNT --destination \$web/bdd --source reports/bdd --overwrite
+          az storage blob upload --account-name $AZURE_STORAGE_ACCOUNT --container-name \$web/api --file reports/api/postman-report.html --name postman-report.html --overwrite

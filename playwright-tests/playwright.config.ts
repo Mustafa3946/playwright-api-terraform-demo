@@ -1,3 +1,6 @@
+// Path: playwright-tests/playwright.config.ts
+// Purpose: Playwright configuration for running UI and API tests and generating HTML reports.
+
 import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
