@@ -24,7 +24,6 @@ View the latest published test reports at:
 
 This repository **directly implements** the core automation engineering skills and technologies highlighted in the job description:
 
-|-----------------------------------------------|------------------------------------------------------------|
 | Capability                                    | Implementation in This Demo                                |
 |-----------------------------------------------|------------------------------------------------------------|
 | **UI Automation (Cross-browser)**             | Playwright (Node.js / TypeScript)                          |
@@ -36,7 +35,6 @@ This repository **directly implements** the core automation engineering skills a
 | **CI/CD Pipeline**                            | GitHub Actions                                             |
 | **Cloud Deployment**                          | Microsoft Azure (Free Tier)                                |
 | **Test Reporting**                            | HTML reports hosted via Azure Blob static website          |
-|-----------------------------------------------|------------------------------------------------------------|
 
 > **This demo covers the full spectrum of automation engineering: scalable frameworks, cross-layer test coverage, CI/CD integration, cloud provisioning, and stakeholder reporting.**
 
